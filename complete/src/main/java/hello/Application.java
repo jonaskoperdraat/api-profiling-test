@@ -15,6 +15,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *  - Rename classes to make more sense
  *  - Change folder structure; remove top level nesting
  *  - Strip tutorial-documentation from the project
+ *  - Remove anything that is not relevant to the subject.
  */
 @SpringBootApplication
 public class Application {
