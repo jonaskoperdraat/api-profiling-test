@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *  - Check timing for concurrent requests
  *  - Rename classes to make more sense
  *  - Change folder structure; remove top level nesting
+ *  - Strip tutorial-documentation from the project
  */
 @SpringBootApplication
 public class Application {
