@@ -1,5 +1,9 @@
 package hello;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -13,6 +17,14 @@ public class PerformanceInterceptor implements MethodInterceptor {
   private @Autowired
   HttpServletRequest request;
 
+  private Map<Class, String> classTaskMapping = new HashMap<>();
+
+  {
+    classTaskMapping.put(GreetingController.class, "request_processing");
+    classTaskMapping.put(DataAccessObject.class, "db_access");
+    classTaskMapping.put(ResponseBuilder.class, "create_response");
+  }
+
   public Object invoke(MethodInvocation method) throws Throwable {
 
     StopWatch stopWatch = (StopWatch) request.getAttribute("stopwatch");
@@ -23,33 +35,23 @@ public class PerformanceInterceptor implements MethodInterceptor {
     // Before calling the method
 
     Class<?> declaringClass = method.getMethod().getDeclaringClass();
-    if (GreetingController.class.equals(declaringClass)) {
+    String previousTask = "other";
+    if (stopWatch.isRunning()) {
+
+      previousTask = stopWatch.currentTaskName();
       stopWatch.stop();
     }
 
-    if (DataAccessObject.class.equals(declaringClass)) {
-      stopWatch.start("db_access");
-    }
-
-    if (ResponseBuilder.class.equals(declaringClass)) {
-      stopWatch.start("create_response");
-    }
+    String task = classTaskMapping.getOrDefault(declaringClass, "");
+    stopWatch.start(task);
 
     // Call the method
     Object result = method.proceed();
 
     // After calling the method
-    if (ResponseBuilder.class.equals(declaringClass)) {
-      stopWatch.stop();
-    }
-
-    if (DataAccessObject.class.equals(declaringClass)) {
-      stopWatch.stop();
-    }
-
-    if (GreetingController.class.equals(declaringClass)) {
-      stopWatch.start("response_processing");
-    }
+    stopWatch.stop();
+    // Continue timing the previous task.
+    stopWatch.start(previousTask);
 
     return result;
 

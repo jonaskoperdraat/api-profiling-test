@@ -36,7 +36,7 @@ public class RequestFilter implements Filter {
     servletRequest.setAttribute("id", id);
     StopWatch stopWatch = new StopWatch(id.toString());
     servletRequest.setAttribute("stopwatch", stopWatch);
-    stopWatch.start("request_processing");
+    stopWatch.start("other");
 
     filterChain.doFilter(servletRequest, servletResponse);
 
